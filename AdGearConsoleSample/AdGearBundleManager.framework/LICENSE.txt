@@ -1,0 +1,14 @@
+401# AdGear iOS SDK v4 LICENSE
+
+By downloading and/or using the software development kit, or the documentation or examples that accompany it (collectively, the “SDK”), you and the company or entity that you represent agree to the AdGear Terms And Conditions [http://adgear.com/termsandconditions].
+If You do not agree to all of the terms and conditions, do not download or use the SDK.
+
+Further, the SDK contains the following components which are copyright and licensed as follows by their individual copyright holders:
+
+## FMDatabase - https://github.com/ccgus/fmdb
+Copyright: Gus Mueller, Rob Ryan
+MIT License: https://github.com/ccgus/fmdb/blob/master/LICENSE.txt
+
+## SSZipArchive - https://github.com/ZipArchive/ZipArchive
+Copyright: Sam Soffes
+LICENSE: https://github.com/ZipArchive/ZipArchive/blob/master/LICENSE.txt

@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="pragma" content="no-cache">
+<title>AdGear - Advertisement</title>
+
+<script type="text/javascript">
+/*
+ * Core language extensions -- the root of all adgear.js
+ */
+var ADGEAR = ADGEAR || { };
+ADGEAR.lang = ADGEAR.lang || { };
+
+/*
+ * Namespaces are just object containers for other stuff.
+ */
+ADGEAR.lang.namespace = function(nsname) {
+  var nodes = nsname.split(".");
+  var obj = window;
+
+  for (var i = 0; i < nodes.length; i++) {
+    obj[nodes[i]] = obj[nodes[i]] || { };
+    obj = obj[nodes[i]];
+  }
+  return obj;
+};
+
+/*
+ * Singletons are invoked once and only once -- prevents re-invocation if this code
+ * is re-included in a page.  You call ADGEAR.lang.singleton() giving it a namespace
+ * to store the singleton in and an initializer/constructor function, along with a list
+ * of arguments to construct the singleton with if and only if it hasn't already been
+ * constructed previously.
+ */
+ADGEAR.lang.singleton = function(/* nsname, initializer, arguments to initializer */) {
+  var args = Array.prototype.slice.call(arguments);
+  var nsname = args.shift();
+  var initializer = args.shift();
+
+  var nodes = nsname.split(".");
+  var obj = window;
+  var lasti = nodes.length - 1;
+  var lnode;
+
+  for (var i = 0; i < lasti; i++) {
+    obj[nodes[i]] = obj[nodes[i]] || { };
+    obj = obj[nodes[i]];
+  }
+
+  lnode = obj[nodes[lasti]];
+  obj[nodes[lasti]] = lnode || initializer.apply(null, args);
+
+  return obj;
+};
+
+/*
+ * Klasses [sic] are singleton constructor functions that produce objects/closures.  No inheritence
+ * model is supported out of the box -- we recommend using object augmentation/mixins
+ * for simulating inheritence.  The nice thing about a "klass" is that you're forced to provide
+ * a closure which gives you a private scope inside which you can define the klass' own private
+ * methods and objects.
+ */
+ADGEAR.lang.klass = function(nsname, constructor) {
+  return ADGEAR.lang.singleton(nsname, function() { return constructor; });
+};
+
+ADGEAR.lang.bind = function(f, what) {
+  var that = what;
+  return function() {
+    return f.apply(that, arguments);
+  };
+};
+
+ADGEAR.lang.mergeHashes = function(h1, h2) {
+  var nh = { };
+  for (var key in h1)
+    nh[key] = h1[key];
+  for (var key in h2)
+    nh[key] = h2[key];
+  return nh;
+};
+
+ADGEAR.lang.log = function(message) {
+  if ((typeof ADGEAR_JS_DEBUG === "undefined") || (ADGEAR_JS_DEBUG !== true))
+    return;
+
+  try {
+    /* If window.console is available then log away there... */
+    if (typeof(window.console) === 'object')
+      window.console.log(message);
+
+    /* If adgearPreviewConsole is available, log there too... */
+    var previewConsole = document.getElementById("adgearPreviewConsole");
+    if (previewConsole) {
+      var _ul = previewConsole.getElementsByTagName("ul");
+      if (_ul && _ul[0]) {
+        _ul = _ul[0];
+      } else {
+        _ul = document.createElement("ul");
+        previewConsole.appendChild(_ul);
+      }
+
+      var _now = new Date();
+      var _li = document.createElement("li");
+      _li.innerHTML = "<strong>[ " +
+                      String(_now.getFullYear()) + "-" +
+                      String(_now.getMonth() + 1) + "-" +
+                      String(_now.getDate()) + " " +
+                      String(_now.getHours()) + ":" +
+                      String(_now.getMinutes()) + ":" +
+                      String(_now.getSeconds()) + " " +
+                      " ] &gt;&gt; </strong>" +
+                      String(message);
+      _ul.appendChild(_li);
+
+      /* Scroll adgearPreviewConsole to the bottom: */
+      previewConsole.scrollTop = previewConsole.scrollHeight;
+    }
+  } catch(e) { }
+};
+
+ADGEAR.lang.indexOf = function(array, elt /*, from */) {
+  var len = array.length;
+  var from = Number(arguments[2]) || 0;
+
+  from = (from < 0) ? Math.ceil(from) : Math.floor(from);
+  if (from < 0)
+    from += len;
+
+  for (; (from >= 0) && (from < len); from++) {
+    if (array[from] === elt)
+      return from;
+  }
+  return -1;
+};
+
+ADGEAR.lang.safeDecodeURIComponent = function(str) {
+  var decoded = "";
+  try { decoded = decodeURIComponent(str) } catch (e) { }
+  return decoded;
+};
+
+ADGEAR.lang.klass("ADGEAR.EventQueue", function() {
+  var _stats = {
+    num_processed: 0,
+    num_loaded:    0,
+    num_error:     0,
+    num_aborted:   0
+  };
+  var equeue            = new Array();
+  var pixel             = new Image();
+  var equeue_processing = false;
+
+  function processItemDone() {
+    _stats.num_processed += 1;
+    pixel = new Image();
+    if (equeue.length > 0)
+      processQueue();
+    else
+      equeue_processing = false;
+  }
+
+  function processPixLoad() {
+    _stats.num_loaded += 1;
+    processItemDone();
+  }
+
+  function processPixError() {
+    _stats.num_error += 1;
+    processItemDone();
+  }
+
+  function processPixAbort() {
+    _stats.num_aborted += 1;
+    processItemDone();
+  }
+
+  function processQueue() {
+    equeue_processing = true;
+    pixel.onload = processItemDone;
+    pixel.onerror = processItemDone;
+    pixel.onabort = processItemDone;
+    pixel.src = equeue.shift();
+  }
+
+  function maybeProcessQueue() {
+    if (!equeue_processing) {
+      processQueue();
+      return true;
+    }
+    return false;
+  }
+
+  return {
+    dispatch: function(event_pixel_url) {
+      if (ADGEAR.regEventUrl) {
+        ADGEAR.regEventUrl(event_pixel_url);
+        return true;
+      }
+      if ("string" === typeof(event_pixel_url) && event_pixel_url.match(/^https?:\/\//)) {
+        equeue.push(event_pixel_url);
+        return maybeProcessQueue();
+      }
+    },
+
+    stats: function(name) {
+      if (name in _stats)
+        return _stats[name];
+      return null;
+    }
+  };
+});
+
+ADGEAR.lang.klass("ADGEAR.QueryString", function(str_or_hash) {
+  var _str = "";
+  var _hash = {};
+
+  function dup(h) {
+    var f = { };
+    for (var key in h)
+      f[key] = h[key];
+    return f;
+  }
+
+  function rebuild(inp) {
+    var qstr, pairs, i, ps, key, value;
+    var dec = ADGEAR.lang.safeDecodeURIComponent;
+
+    if ((typeof inp === "string") && (inp !== "")) {
+
+       _str = inp;
+      if (_str.substring(0, 1) === "?") {
+        _str = _str.substring(1);
+      }
+
+      pairs = _str.split("&");
+      for (i = 0; i < pairs.length; i++) {
+        ps = pairs[i].split("=");
+        key = dec(ps.shift());
+        value = ((ps != null) && (ps.length > 0)) ? dec(ps.join("=")) : null;
+        _hash[key] = value;
+      }
+
+    } else if (typeof inp === "object") {
+
+      _hash = dup(inp);
+      qstr = new Array();
+      for (key in _hash) {
+        value = encodeURIComponent(String(key));
+        if (_hash[key] != null) {
+          value += "=" + encodeURIComponent(String(_hash[key]));
+        }
+        qstr.push(value);
+      }
+      _str = qstr.join("&");
+
+    }
+  }
+
+  if (str_or_hash != null)
+    rebuild(str_or_hash);
+
+  return {
+    toString: function() {
+      return _str;
+    },
+
+    toHash: function() {
+      return _hash;
+    },
+
+    update: function(key, val) {
+      _hash[key] = val;
+      rebuild(_hash);
+      return this;
+    },
+
+    add: function(key, val) {
+      return this.update(key, val);
+    },
+
+    del: function(key) {
+      delete _hash[key];
+      rebuild(_hash);
+      return this;
+    },
+
+    contains: function(key) {
+      return !!(key in _hash);
+    },
+
+    get: function(key) {
+      if (this.contains(key))
+        return _hash[key];
+      return null;
+    },
+
+    delAdGearParams: function() {
+      var nvars = {};
+      for (var key in _hash) {
+        if (!key.match(/^AG_/))
+          nvars[key] = _hash[key];
+      }
+      rebuild(nvars);
+      return this;
+    },
+
+    dup: function() {
+      return ADGEAR.QueryString(this.toHash());
+    }
+  };
+});
+
+ADGEAR.lang.singleton("ADGEAR.browser", function() {
+  var AGL = ADGEAR.lang;
+  var _top_window = null;
+  var _querystring = null;
+  var _referrer = null;
+  var _location = null;
+
+  return {
+    type: {
+      IE:           !!(window.attachEvent && (AGL.indexOf(navigator.userAgent, 'Opera') === -1)),
+      Opera:        AGL.indexOf(navigator.userAgent, 'Opera') > -1,
+      WebKit:       AGL.indexOf(navigator.userAgent, 'AppleWebKit/') > -1,
+      Gecko:        AGL.indexOf(navigator.userAgent, 'Gecko') > -1 && AGL.indexOf(navigator.userAgent, 'KHTML') === -1,
+      MobileSafari: !!navigator.userAgent.match(/Apple.*Mobile.*Safari/)
+    },
+
+    topWindow: function() {
+      if (_top_window == null) {
+        try {
+          _top_window = window.parent;
+          while (_top_window && (_top_window != _top_window.parent))
+            _top_window = _top_window.parent;
+        } catch(err) {}
+      }
+      return _top_window;
+    },
+
+    isTopWindow: function() {
+      return (this.topWindow() == window);
+    },
+
+    /*
+     * Careful: this should be treated as immutable. If you call delAdGearParams() on the
+     * result you risk mutating the currentQueryString global.
+     */
+    currentQueryString: function() {
+      if (_querystring == null) {
+        try { _querystring  = ADGEAR.QueryString(window.location.search); } catch(err) {}
+      }
+      return _querystring;
+    },
+
+    trueReferrer: function() {
+      if (_referrer == null) {
+        try { _referrer = this.topWindow().document.referrer; } catch(err) {}
+
+        /* If still unresolved then set to empty: */
+        if (_referrer == null)
+          _referrer = "";
+      }
+      return _referrer;
+    },
+
+    trueReferer: function() {
+      return this.trueReferrer();
+    },
+
+    trueLocation: function() {
+      if (_location == null) {
+        try { _location = String(this.topWindow().location); } catch(err) {}
+
+        /* If still unresolved then set to empty: */
+        if (_location == null)
+          _location = "";
+      }
+      return _location;
+    },
+
+    localtime: function() {
+      var iso8601 = "";
+
+      try {
+        var d = new Date();
+
+        var tzo = d.getTimezoneOffset();
+        var tzo_sign = (tzo < 0 ? "+" : "-");
+        tzo = Math.abs(tzo);
+        var tzo_hours = parseInt(tzo / 60);
+        var tzo_minutes = (tzo % 60);
+
+        var pad2 = function(x) {
+          x = String(x);
+          while (x.length < 2) {
+            x = "0" + x;
+          }
+          return(x);
+        }
+
+        iso8601 = String(d.getFullYear()) +
+            "-" +
+            pad2(d.getMonth() + 1) +
+            "-" +
+            pad2(d.getDate()) +
+            "T" +
+            pad2(d.getHours()) +
+            ":" +
+            pad2(d.getMinutes()) +
+            ":" +
+            pad2(d.getSeconds()) +
+            tzo_sign +
+            pad2(tzo_hours) +
+            ":" +
+            pad2(tzo_minutes);
+      } catch (err) {
+      }
+
+      return iso8601;
+    }
+  };
+});
+
+ADGEAR.lang.klass("ADGEAR.Environment", function(config) {
+  var _config = { };
+  var _dhints = { };
+  var _sessId = "ag" + String(Math.floor(Math.random() * 100000000000000));
+  var _equeue = ADGEAR.EventQueue();
+  var _proto = "http";
+
+  /* Copy config over to private instance data: */
+  for (var key in config)
+    _config[key] = config[key];
+
+  /* URL builder pre-concat helper: */
+  function genUrlHelpers() {
+    _config["durl"] = "";
+    _config["aurl"] = "";
+
+    if (("delivery" in _config) && (_proto in _config["delivery"]) && ("hostname" in _config["delivery"][_proto]) && (_config["delivery"][_proto]["hostname"] !== ""))
+      _config["durl"] = _proto + "://" + _config["delivery"][_proto]["hostname"];
+    if (("assets" in _config) && (_proto in _config["assets"]) && ("hostname" in _config["assets"][_proto]) && (_config["assets"][_proto]["hostname"] !== "")) {
+      _config["aurl"] = _proto + "://" + _config["assets"][_proto]["hostname"];
+      if (("bucket" in _config["assets"][_proto]) && (_config["assets"][_proto]["bucket"] !== ""))
+        _config["aurl"] += "/" + _config["assets"][_proto]["bucket"];
+    }
+  }
+
+  function safeUrlAppend(url, append) {
+    var qindex = url.indexOf("?");
+    var rou = url;
+    var tok = "";
+
+    if (append !== "") {
+      if (qindex < 0)
+        tok = "?";
+      else if (qindex != (url.length - 1))
+        tok = "&";
+      rou = rou + tok + append;
+    }
+    return rou;
+  }
+
+  /* Detect protocol and generate durl and aurl accordingly in _config: */
+  genUrlHelpers();
+  if (window.location.protocol == "https:") {
+    _proto = "https";
+    genUrlHelpers();
+  }
+
+  return {
+
+    config: function() {
+      return _config;
+    },
+
+    proto: function() {
+      return _proto;
+    },
+
+    getSessionId: function() {
+      return _sessId;
+    },
+
+    setSessionId: function(sessId) {
+      _sessId = String(sessId);
+    },
+
+    eventQueue: function() {
+      return _equeue;
+    },
+
+    helloUrl: function(/* sessionId */) {
+      this.setSessionId(arguments[0] || this.getSessionId());
+      return this.deliveryUrl("/session.js", { "session": this.getSessionId() });
+    },
+
+    deliveryUrl: function(path/*, args */) {
+      var args = arguments[1] || {};
+      var AGB = ADGEAR.browser;
+      var qstr = ADGEAR.QueryString({});
+
+      if ("querystring" in args && typeof(args["querystring"].toHash) !== 'undefined') {
+        qstr = ADGEAR.QueryString(args["querystring"].toHash());
+      }
+
+      /*
+       * XXX If the provided "path" is actually a URL (starts with http(s)://)
+       * then we don't bother pre-pending our environment's configured
+       * delivery URL prefix, and we don't bother appending anything other
+       * than an explicitly-provided querystring, if any. This is so
+       * that "pre-resolved paths" work, and is mostly here as a legacy
+       * support DRY convenience.
+       */
+      if (String(path).match(/^https?:\/\//))
+        return safeUrlAppend(path, qstr.toString());
+
+      if (!("cachebust" in args) || (args["cachebust"] !== false))
+        qstr.add("AG_R", String(Math.floor(Math.random() * 100000000000000)));
+
+      if (!("localtime" in args) || (args["localtime"] !== false))
+        qstr.add("AG_LT", AGB.localtime());
+
+      if (!("trueref" in args) || (args["trueref"] !== false))
+        qstr.add("AG_REF", AGB.trueReferrer());
+
+      if ("session" in args)
+        qstr.add("AG_SESSID", args["session"]);
+
+      if (!("deliveryhints" in args) || (args["deliveryhints"] !== false)) {
+        for (var key in _dhints)
+          qstr.add(key, _dhints[key].join(","));
+      }
+
+      return (_config["durl"] + safeUrlAppend(path, qstr.toString()));
+    },
+
+    assetUrl: function(path/*, args */) {
+      var args = arguments[1] || {};
+      var qstr = ADGEAR.QueryString({});
+
+      if ("querystring" in args)
+        qstr = ADGEAR.QueryString(args["querystring"].toHash());
+
+      /*
+       * XXX If the provided "path" is actually a URL (starts with http(s)://)
+       * then we don't bother pre-pending our environment's configured
+       * assets URL prefix, and we don't bother appending anything other
+       * than an explicitly-provided querystring, if any. This is so
+       * that "pre-resolved paths" work, and is mostly here as a legacy
+       * support DRY convenience.
+       */
+      if (String(path).match(/^https?:\/\//))
+        return safeUrlAppend(path, qstr.toString());
+
+      if (("cachebust" in args) && (args["cachebust"] === true))
+        qstr.add("AG_R", String(Math.floor(Math.random() * 100000000000000)));
+
+      return (_config["aurl"] + safeUrlAppend(path, qstr.toString()));
+    },
+
+    addDeliveryHint: function(name, value) {
+      if (!(name in _dhints))
+        _dhints[name] = [ ];
+      _dhints[name].push(value);
+    }
+
+  };
+});
+
+
+ADGEAR.lang.singleton("ADGEAR.envs", function() {
+  var ENVS = {};
+  return {
+    config: function(conf) {
+      var name = conf["name"];
+      if (!(name in ENVS))
+        ENVS[name] = ADGEAR.Environment(conf);
+      return ENVS[name];
+    }
+  };
+});
+
+
+ADGEAR.lang.singleton("ADGEAR.templateApi", function() {
+  return {
+    getClickUrlFromPath: function(path/*, args */) {
+      var opts = {
+        "querystring": arguments[1] || ADGEAR.QueryString({}),
+        "cachebust": true,
+        "localtime": false,
+        "trueref": false,
+        "deliveryhints": false
+      };
+      var url = this.env.deliveryUrl(path, opts);
+
+      /*
+       * A note on click tracking and redirections:
+       *
+       * ADGEAR_SOURCE_CLICKTRACKER and ADGEAR_SOURCE_CLICKTRACKER_EXPECTS_ENCODED are
+       * two tokens controlling all our click URLs which can be set by a first party
+       * serving our tag(s) in order to affect all click tracking.
+       *
+       * ADGEAR_SOURCE_CLICKTRACKER will, if set, typically contain a first party click
+       * tracker URL which, when concatenated with another URL, redirect to said URL while
+       * also registering/tracking a click on its end.  The optional parameter
+       * ADGEAR_SOURCE_CLICKTRACKER_EXPECTS_ENCODED, false by default, can be set to true
+       * in order to cause us to encode the redirected-to URL (i.e., *our* click tracker
+       * URL being built here) prior to concatenating it.  The default behavior is NOT
+       * to encode.
+       *
+       * Note the special case when we're delivering onto a first party desiring to track
+       * clicks with ADGEAR_SOURCE_CLICKTRACKER and we also happen to deliver third party
+       * code... in this case, prepThirdParty() further below will end up being called
+       * to substitute in our own source/third-party click tracker into __CLICK_TRACKER_URL__
+       * Luckily, prepThirdParty() calls us (getClickUrlFromPath()) so we will take care of
+       * also including ADGEAR_SOURCE_CLICKTRACKER as part of __CLICK_TRACKER_URL__.
+       * This sometimes results in URLs like:
+       *
+       * [1st party] + [AG thirdparty click tracker] + "?" + [thirdparty click tracker] + ...
+       *
+       * Our adopted convention is to redirect through ADGEAR_SOURCE_CLICKTRACKER *first*,
+       * when provided.
+       *
+       * It is not uncommon to find URLs with multiple unescaped question marks ("?") in them.
+       * Luckily, they work.  Our own third party click tracker works whether you pass it
+       * an encoded/escaped or untouched destination URL.
+       */
+
+       if (this["source_clicktracker"]) {
+
+         var source_clicktracker;
+
+         if (this["source_clicktracker_is_encoded"]) {
+           source_clicktracker = ADGEAR.lang.safeDecodeURIComponent(this["source_clicktracker"]);
+         } else if (this["source_clicktracker_is_double_encoded"]) {
+           var dec = ADGEAR.lang.safeDecodeURIComponent;
+           source_clicktracker = dec(dec(this["source_clicktracker"]));
+         } else {
+           source_clicktracker = this["source_clicktracker"];
+         }
+
+         var dest_url = this["source_clicktracker_expects_encoded"] ? encodeURIComponent(url) : url;
+         url = source_clicktracker + dest_url;
+       }
+
+      return url;
+    },
+
+    getClickUrl: function(name/*, args */) {
+      if (!("clicks" in this) || !(name in this["clicks"]))
+        return null;
+      var args = arguments[1] || ADGEAR.QueryString({});
+      return this.getClickUrlFromPath(this.clicks[name], args);
+    },
+
+    getInteractionUrl: function(name/*, args */) {
+      if (("interactions" in this) && (name in this["interactions"]))
+        return this.env.deliveryUrl(this.interactions[name], {
+          "querystring": arguments[1] || ADGEAR.QueryString({}),
+          "localtime": false,
+          "trueref": false,
+          "deliveryhints": false
+        });
+      return null;
+    },
+
+    getFileUrl: function(name) {
+      if (("files" in this) && (name in this["files"])) {
+        if ("local_cache_key" in this) {
+          var path = this.files[name];
+          if (path.substring(0, 1) === "/") {
+            path = path.substring(1);
+          }
+          return path;
+        }
+        return this.env.assetUrl(this.files[name]);
+      }
+      return null;
+    },
+
+    getVariable: function(name) {
+      if (("variables" in this) && (name in this["variables"]))
+        return this.variables[name];
+      return null;
+    },
+
+    getContainerId: function() {
+      return "adgear_" + String(this.instance_id).replace(/-/g, "_");
+    },
+
+    getWidth: function() {
+      var fwidth = this["format_width"];
+
+      if (fwidth && String(fwidth) !== "1")
+        return fwidth;
+      if (this["natural_width"])
+        return String(this["natural_width"]);
+      return "500";
+    },
+
+    getHeight: function() {
+      var fheight = this["format_height"];
+
+      if (fheight && String(fheight) !== "1")
+        return fheight;
+      if (this["natural_height"])
+        return String(this["natural_height"]);
+      return "500";
+    },
+
+    prepThirdParty: function(code_or_url) {
+      var str = code_or_url;
+      var ctracker = this["click_tracker"];
+
+      if (String(ctracker).length > 0)
+        str = str.replace("__CLICK_TRACKER_URL__", this.getClickUrlFromPath(ctracker + "?"));
+      str = str.replace("__RANDOM_NUMBER__", Math.floor(Math.random() * 100000000000000));
+      return str;
+    },
+
+    regClick: function(name/*, args */) {
+      var args = arguments[1] || ADGEAR.QueryString({});
+      var _url = this.getClickUrl(name, args);
+
+      if (_url)
+        ADGEAR.lang.log("AdUnit registered CLICK with name: " + String(name) +
+            " - redirect URL: " + _url + " - params: [ " + args.toString() + " ]");
+      else
+        ADGEAR.lang.log("AdUnit attempted to register CLICK with name: " + String(name) +
+            " - params: [ " + args.toString() + " ] - but click NOT FOUND!");
+
+      ADGEAR.browser.topWindow().location = _url;
+    },
+
+    regInteraction: function(name/*, args */) {
+      var args = arguments[1] || ADGEAR.QueryString({});
+      var eq = this.env.eventQueue();
+      var _url = this.getInteractionUrl(name, args);
+
+      if (_url)
+        ADGEAR.lang.log("AdUnit registered INTERACTION/EVENT with name: " + String(name) +
+            " - params: [ " + args.toString() + " ]");
+      else
+        ADGEAR.lang.log("AdUnit attempted to register INTERACTION/EVENT with name: " + String(name) +
+            " - params: [ " + args.toString() + " ] - but interaction NOT FOUND!");
+
+      return eq.dispatch(_url);
+    },
+
+    getGeoCountryCode: function() {
+      if (("geo" in this) && ("country_code" in this["geo"]))
+        return String(this.geo["country_code"]);
+      return null;
+    },
+
+    getGeoCountryName: function() {
+      if (("geo" in this) && ("country_name" in this["geo"]))
+        return String(this.geo["country_name"]);
+      return null;
+    },
+
+    getGeoRegion: function() {
+      if (("geo" in this) && ("region" in this["geo"]))
+        return String(this.geo["region"]);
+      return null;
+    },
+
+    getGeoCity: function() {
+      if (("geo" in this) && ("city" in this["geo"]))
+        return String(this.geo["city"]);
+      return null;
+    },
+
+    getGeoPostalCode: function() {
+      if (("geo" in this) && ("postal_code" in this["geo"]))
+        return String(this.geo["postal_code"]);
+      return null;
+    },
+
+    getGeoIsp: function() {
+      if (("geo" in this) && ("isp" in this["geo"]))
+        return String(this.geo["isp"]);
+      return null;
+    },
+
+    getGeoNetspeed: function() {
+      if (("geo" in this) && ("netspeed" in this["geo"]))
+        return String(this.geo["netspeed"]);
+      return null;
+    },
+
+    getGeoLongitude: function() {
+      if (("geo" in this) && ("longitude" in this["geo"]))
+        return String(this.geo["longitude"]);
+      return null;
+    },
+
+    getGeoLatitude: function() {
+      if (("geo" in this) && ("latitude" in this["geo"]))
+        return String(this.geo["latitude"]);
+      return null;
+    },
+
+    getGeoDmaCode: function() {
+      if (("geo" in this) && ("dma_code" in this["geo"]))
+        return String(this.geo["dma_code"]);
+      return null;
+    },
+
+    getGeoAreaCode: function() {
+      if (("geo" in this) && ("area_code" in this["geo"]))
+        return String(this.geo["area_code"]);
+      return null;
+    },
+
+    getImpressionHint: function(name) {
+      if (("impression_hints" in this) && (name in this["impression_hints"]))
+        return String(this.impression_hints[name]);
+      return null;
+    },
+
+    regOnLoadEvent: function(fn) {
+      if (typeof window.addEventListener != 'undefined') {
+        window.addEventListener('load', fn, false);
+      } else if (typeof document.addEventListener != 'undefined') {
+        document.addEventListener('load', fn, false);
+      } else if (typeof window.attachEvent != 'undefined') {
+        window.attachEvent('onload', fn);
+      } else {
+        if (typeof window.onload == 'function') {
+          var existing = window.onload;
+          window.onload = function() {
+            existing();
+            fn();
+          };
+        } else {
+          window.onload = fn;
+        }
+      }
+    }
+  };
+});
+
+ADGEAR.render = function(templateCallback, ddata) {
+  function addDeliveryHintsToEnv(obj) {
+    if (("placement_id" in obj) && ("adunit_id" in obj))
+      obj["env"].addDeliveryHint("AG_S", "p" + String(obj["placement_id"]) + ",a" + String(obj["adunit_id"]));
+  };
+
+  /* We do this in a try/catch in case the tilings key in delivery data is null for whatever reason: */
+  function addTilingStateToEnv(obj) {
+    var tilings = null;
+    try {
+      if ("tilings" in obj) {
+        tilings = obj["tilings"];
+        if ("served" in tilings)
+          obj["env"].addDeliveryHint("AG_TS", String(tilings["served"]));
+        if ("unserved" in tilings) {
+          for (var i = 0; i < tilings["unserved"].length; i++)
+            obj["env"].addDeliveryHint("AG_TN", String(tilings["unserved"][i]));
+        }
+      }
+    } catch(ex) { }
+  };
+
+  function mixInTemplateApi(obj) {
+    for (var k in ADGEAR.templateApi)
+      obj[k] = ADGEAR.templateApi[k];
+  };
+
+  function saveSourceClickTrackers(obj) {
+    obj["source_clicktracker"] = null;
+    obj["source_clicktracker_expects_encoded"] = false;
+    obj["source_clicktracker_is_encoded"] = false;
+    obj["source_clicktracker_is_double_encoded"] = false;
+
+    if ((typeof ADGEAR_SOURCE_CLICKTRACKER === "string") && (String(ADGEAR_SOURCE_CLICKTRACKER).toLowerCase().match(/^http/))) {
+      obj["source_clicktracker"] = ADGEAR_SOURCE_CLICKTRACKER;
+    }
+
+    obj["source_clicktracker_expects_encoded"] = (typeof ADGEAR_SOURCE_CLICKTRACKER_EXPECTS_ENCODED !== "undefined") && ADGEAR_SOURCE_CLICKTRACKER_EXPECTS_ENCODED;
+    obj["source_clicktracker_is_encoded"] = (typeof ADGEAR_SOURCE_CLICKTRACKER_IS_ENCODED !== "undefined") && ADGEAR_SOURCE_CLICKTRACKER_IS_ENCODED;
+    obj["source_clicktracker_is_double_encoded"] = (typeof ADGEAR_SOURCE_CLICKTRACKER_IS_DOUBLE_ENCODED !== "undefined") && ADGEAR_SOURCE_CLICKTRACKER_IS_DOUBLE_ENCODED;
+
+    /* We've saved the globals, if present, to our instance, now re-set them to not confuse others: */
+    ADGEAR_SOURCE_CLICKTRACKER = null;
+    ADGEAR_SOURCE_CLICKTRACKER_EXPECTS_ENCODED = null;
+    ADGEAR_SOURCE_CLICKTRACKER_IS_ENCODED = null;
+    ADGEAR_SOURCE_CLICKTRACKER_IS_DOUBLE_ENCODED = null;
+  };
+
+
+  function saveOOBClickTrack(obj) {
+    if (typeof OOBClickTrack === "string") { obj['OOBClickTrack'] = OOBClickTrack }
+    OOBClickTrack = null;
+  };
+
+  if (("env" in ddata) && ("name" in ddata["env"])) {
+    var _env = ADGEAR.envs.config(ddata["env"]);
+    if (!_env) {
+      ADGEAR.lang.log("Unable to reference environment specified by AdUnit payload (name = " +
+          String(ddata["env"]["name"]) + "). Aborting rendering!");
+      return false;
+    }
+    ddata["env"] = _env;
+
+    addDeliveryHintsToEnv(ddata);
+    addTilingStateToEnv(ddata);
+    saveSourceClickTrackers(ddata);
+    saveOOBClickTrack(ddata);
+    mixInTemplateApi(ddata);
+
+    try {
+      templateCallback(ddata);
+    }
+    catch (e) {
+      ADGEAR.lang.log("Failed in executing ad rendering template '" +
+                      String(ddata["template"]) + "' - placement ID: " + String(ddata["placement_id"]) +
+                      ", adunit ID: " + String(ddata["adunit_id"]) + " - in environment '" +
+                      String((_env.config())["name"]) + "'. Exception: " + String(e));
+      return false;
+    }
+  }
+
+  return true;
+};
+</script>
+
+</head>
+<body style="margin:0; padding:0;">
+
+<script type="text/javascript">
+ADGEAR.lang.namespace("ADGEAR.vendor");
+ADGEAR.vendor.Base64 = {
+  _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+
+  encode: function(input) {
+    var output = "";
+    var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+    var i = 0;
+    var Base64 = ADGEAR.vendor.Base64;
+
+    input = Base64._utf8_encode(input);
+    while (i < input.length) {
+      chr1 = input.charCodeAt(i++);
+      chr2 = input.charCodeAt(i++);
+      chr3 = input.charCodeAt(i++);
+
+      enc1 = chr1 >> 2;
+      enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+      enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+      enc4 = chr3 & 63;
+
+      if (isNaN(chr2)) {
+        enc3 = enc4 = 64;
+      } else if (isNaN(chr3)) {
+        enc4 = 64;
+      }
+
+      output = output +
+               this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
+               this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+    }
+    return output;
+  },
+
+  decode: function(input) {
+    var output = "";
+    var chr1, chr2, chr3;
+    var enc1, enc2, enc3, enc4;
+    var i = 0;
+    var Base64 = ADGEAR.vendor.Base64;
+
+    input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+    while (i < input.length) {
+      enc1 = this._keyStr.indexOf(input.charAt(i++));
+      enc2 = this._keyStr.indexOf(input.charAt(i++));
+      enc3 = this._keyStr.indexOf(input.charAt(i++));
+      enc4 = this._keyStr.indexOf(input.charAt(i++));
+
+      chr1 = (enc1 << 2) | (enc2 >> 4);
+      chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+      chr3 = ((enc3 & 3) << 6) | enc4;
+
+      output = output + String.fromCharCode(chr1);
+      if (enc3 != 64) {
+        output = output + String.fromCharCode(chr2);
+      }
+      if (enc4 != 64) {
+        output = output + String.fromCharCode(chr3);
+      }
+    }
+
+    output = Base64._utf8_decode(output);
+    return output;
+  },
+
+  _utf8_encode: function(str) {
+    str = str.replace(/\r\n/g,"\n");
+    var utftext = "";
+
+    for (var n = 0; n < str.length; n++) {
+      var c = str.charCodeAt(n);
+
+      if (c < 128) {
+        utftext += String.fromCharCode(c);
+      } else if ((c > 127) && (c < 2048)) {
+        utftext += String.fromCharCode((c >> 6) | 192);
+        utftext += String.fromCharCode((c & 63) | 128);
+      } else {
+        utftext += String.fromCharCode((c >> 12) | 224);
+        utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+        utftext += String.fromCharCode((c & 63) | 128);
+      }
+    }
+    return utftext;
+  },
+
+  _utf8_decode: function(utftext) {
+    var str = "";
+    var i = 0;
+    var c = c1 = c2 = 0;
+
+    while ( i < utftext.length ) {
+      c = utftext.charCodeAt(i);
+
+      if (c < 128) {
+        str += String.fromCharCode(c);
+        i++;
+      } else if((c > 191) && (c < 224)) {
+        c2 = utftext.charCodeAt(i+1);
+        str += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+        i += 2;
+      } else {
+        c2 = utftext.charCodeAt(i+1);
+        c3 = utftext.charCodeAt(i+2);
+        str += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+        i += 3;
+      }
+    }
+    return str;
+  }
+};
+
+ADGEAR.render(function(ddata) {
+  var global_evaler = window.execScript || window.eval || eval;
+  var _pload = ddata.prepThirdParty(ADGEAR.vendor.Base64.decode(ddata.getVariable("payload")));
+
+  /*
+   * We have to assign this here, because window.eval doesn't have the same context / root object
+   * as plain eval. I don't know about execScript, but I'm assuming it's the same thing.
+   */
+  window.adgear_instance = ddata;
+
+  global_evaler(_pload);
+},
+__AG_AD_METADATA__
+);
+</script>
+
+</body>
+</html>

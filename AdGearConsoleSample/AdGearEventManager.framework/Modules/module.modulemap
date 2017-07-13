@@ -1,0 +1,6 @@
+framework module AdGearEventManager {
+  umbrella header "AdGearEventManager.h"
+
+  export *
+  module * { export * }
+}

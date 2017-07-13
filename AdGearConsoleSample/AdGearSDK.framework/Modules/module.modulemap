@@ -1,0 +1,6 @@
+framework module AdGearSDK {
+  umbrella header "AdGearSDK.h"
+
+  export *
+  module * { export * }
+}

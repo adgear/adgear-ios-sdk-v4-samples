@@ -1,0 +1,6 @@
+framework module AdGearMRAIDWebView {
+  umbrella header "AdGearMRAIDWebView.h"
+
+  export *
+  module * { export * }
+}

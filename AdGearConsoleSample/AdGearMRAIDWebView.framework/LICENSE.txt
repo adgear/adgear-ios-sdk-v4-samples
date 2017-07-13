@@ -1,0 +1,4 @@
+# AdGear iOS SDK v4 LICENSE
+
+By downloading and/or using the software development kit, or the documentation or examples that accompany it (collectively, the “SDK”), you and the company or entity that you represent agree to the AdGear Terms And Conditions [http://adgear.com/termsandconditions].
+If You do not agree to all of the terms and conditions, do not download or use the SDK.

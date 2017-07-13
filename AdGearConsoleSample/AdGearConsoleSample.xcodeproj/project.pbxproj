@@ -1,0 +1,375 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A6231B801F16A308000A3E45 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A6231B7F1F16A308000A3E45 /* main.m */; };
+		A6231B831F16A308000A3E45 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A6231B821F16A308000A3E45 /* AppDelegate.m */; };
+		A6231B861F16A308000A3E45 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6231B851F16A308000A3E45 /* ViewController.m */; };
+		A6231B891F16A308000A3E45 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6231B871F16A308000A3E45 /* Main.storyboard */; };
+		A6231B8B1F16A308000A3E45 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6231B8A1F16A308000A3E45 /* Assets.xcassets */; };
+		A6231B8E1F16A308000A3E45 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6231B8C1F16A308000A3E45 /* LaunchScreen.storyboard */; };
+		A6231BB51F16B681000A3E45 /* AdGearSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6231BAD1F16B668000A3E45 /* AdGearSDK.framework */; };
+		A6231BB61F16B681000A3E45 /* AdGearSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A6231BAD1F16B668000A3E45 /* AdGearSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A6231BB71F16B681000A3E45 /* AdGearBundleManager.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6231BAE1F16B668000A3E45 /* AdGearBundleManager.framework */; };
+		A6231BB81F16B681000A3E45 /* AdGearBundleManager.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A6231BAE1F16B668000A3E45 /* AdGearBundleManager.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A6231BB91F16B681000A3E45 /* AdGearEventManager.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6231BAF1F16B668000A3E45 /* AdGearEventManager.framework */; };
+		A6231BBA1F16B681000A3E45 /* AdGearEventManager.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A6231BAF1F16B668000A3E45 /* AdGearEventManager.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A6231BBB1F16B681000A3E45 /* AdGearMRAIDWebView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6231BB01F16B668000A3E45 /* AdGearMRAIDWebView.framework */; };
+		A6231BBC1F16B681000A3E45 /* AdGearMRAIDWebView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A6231BB01F16B668000A3E45 /* AdGearMRAIDWebView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A6231BBD1F16B681000A3E45 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A6231BB81F16B681000A3E45 /* AdGearBundleManager.framework in Embed Frameworks */,
+				A6231BB61F16B681000A3E45 /* AdGearSDK.framework in Embed Frameworks */,
+				A6231BBC1F16B681000A3E45 /* AdGearMRAIDWebView.framework in Embed Frameworks */,
+				A6231BBA1F16B681000A3E45 /* AdGearEventManager.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		A6231B7B1F16A308000A3E45 /* AdGearConsoleSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AdGearConsoleSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A6231B7F1F16A308000A3E45 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A6231B811F16A308000A3E45 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		A6231B821F16A308000A3E45 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		A6231B841F16A308000A3E45 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		A6231B851F16A308000A3E45 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		A6231B881F16A308000A3E45 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		A6231B8A1F16A308000A3E45 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A6231B8D1F16A308000A3E45 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		A6231B8F1F16A308000A3E45 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A6231BAD1F16B668000A3E45 /* AdGearSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AdGearSDK.framework; sourceTree = "<group>"; };
+		A6231BAE1F16B668000A3E45 /* AdGearBundleManager.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AdGearBundleManager.framework; sourceTree = "<group>"; };
+		A6231BAF1F16B668000A3E45 /* AdGearEventManager.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AdGearEventManager.framework; sourceTree = "<group>"; };
+		A6231BB01F16B668000A3E45 /* AdGearMRAIDWebView.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AdGearMRAIDWebView.framework; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A6231B781F16A308000A3E45 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A6231BB71F16B681000A3E45 /* AdGearBundleManager.framework in Frameworks */,
+				A6231BB51F16B681000A3E45 /* AdGearSDK.framework in Frameworks */,
+				A6231BBB1F16B681000A3E45 /* AdGearMRAIDWebView.framework in Frameworks */,
+				A6231BB91F16B681000A3E45 /* AdGearEventManager.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A6231B721F16A308000A3E45 = {
+			isa = PBXGroup;
+			children = (
+				A6231B7D1F16A308000A3E45 /* AdGearConsoleSample */,
+				A6231B7C1F16A308000A3E45 /* Products */,
+				A6231B951F16B464000A3E45 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		A6231B7C1F16A308000A3E45 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A6231B7B1F16A308000A3E45 /* AdGearConsoleSample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A6231B7D1F16A308000A3E45 /* AdGearConsoleSample */ = {
+			isa = PBXGroup;
+			children = (
+				A6231B811F16A308000A3E45 /* AppDelegate.h */,
+				A6231B821F16A308000A3E45 /* AppDelegate.m */,
+				A6231B841F16A308000A3E45 /* ViewController.h */,
+				A6231B851F16A308000A3E45 /* ViewController.m */,
+				A6231B871F16A308000A3E45 /* Main.storyboard */,
+				A6231B8A1F16A308000A3E45 /* Assets.xcassets */,
+				A6231B8C1F16A308000A3E45 /* LaunchScreen.storyboard */,
+				A6231B8F1F16A308000A3E45 /* Info.plist */,
+				A6231B7E1F16A308000A3E45 /* Supporting Files */,
+			);
+			path = AdGearConsoleSample;
+			sourceTree = "<group>";
+		};
+		A6231B7E1F16A308000A3E45 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A6231B7F1F16A308000A3E45 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		A6231B951F16B464000A3E45 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A6231BAD1F16B668000A3E45 /* AdGearSDK.framework */,
+				A6231BAE1F16B668000A3E45 /* AdGearBundleManager.framework */,
+				A6231BAF1F16B668000A3E45 /* AdGearEventManager.framework */,
+				A6231BB01F16B668000A3E45 /* AdGearMRAIDWebView.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A6231B7A1F16A308000A3E45 /* AdGearConsoleSample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A6231B921F16A308000A3E45 /* Build configuration list for PBXNativeTarget "AdGearConsoleSample" */;
+			buildPhases = (
+				A6231B771F16A308000A3E45 /* Sources */,
+				A6231B781F16A308000A3E45 /* Frameworks */,
+				A6231B791F16A308000A3E45 /* Resources */,
+				A6231BBD1F16B681000A3E45 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AdGearConsoleSample;
+			productName = AdGearConsoleSample;
+			productReference = A6231B7B1F16A308000A3E45 /* AdGearConsoleSample.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A6231B731F16A308000A3E45 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0830;
+				ORGANIZATIONNAME = "Boulat Oulmachev";
+				TargetAttributes = {
+					A6231B7A1F16A308000A3E45 = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = MYUQ7CCCB5;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = A6231B761F16A308000A3E45 /* Build configuration list for PBXProject "AdGearConsoleSample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A6231B721F16A308000A3E45;
+			productRefGroup = A6231B7C1F16A308000A3E45 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A6231B7A1F16A308000A3E45 /* AdGearConsoleSample */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A6231B791F16A308000A3E45 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A6231B8E1F16A308000A3E45 /* LaunchScreen.storyboard in Resources */,
+				A6231B8B1F16A308000A3E45 /* Assets.xcassets in Resources */,
+				A6231B891F16A308000A3E45 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A6231B771F16A308000A3E45 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A6231B861F16A308000A3E45 /* ViewController.m in Sources */,
+				A6231B831F16A308000A3E45 /* AppDelegate.m in Sources */,
+				A6231B801F16A308000A3E45 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		A6231B871F16A308000A3E45 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A6231B881F16A308000A3E45 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		A6231B8C1F16A308000A3E45 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A6231B8D1F16A308000A3E45 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		A6231B901F16A308000A3E45 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A6231B911F16A308000A3E45 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A6231B931F16A308000A3E45 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = MYUQ7CCCB5;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				INFOPLIST_FILE = AdGearConsoleSample/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.adgear.AdGearConsoleSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		A6231B941F16A308000A3E45 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = MYUQ7CCCB5;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				INFOPLIST_FILE = AdGearConsoleSample/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.adgear.AdGearConsoleSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A6231B761F16A308000A3E45 /* Build configuration list for PBXProject "AdGearConsoleSample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A6231B901F16A308000A3E45 /* Debug */,
+				A6231B911F16A308000A3E45 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A6231B921F16A308000A3E45 /* Build configuration list for PBXNativeTarget "AdGearConsoleSample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A6231B931F16A308000A3E45 /* Debug */,
+				A6231B941F16A308000A3E45 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A6231B731F16A308000A3E45 /* Project object */;
+}
