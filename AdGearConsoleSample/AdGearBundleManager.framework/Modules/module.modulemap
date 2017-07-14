@@ -1,6 +1,0 @@
-framework module AdGearBundleManager {
-  umbrella header "AdGearBundleManager.h"
-
-  export *
-  module * { export * }
-}
